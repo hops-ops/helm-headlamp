@@ -1,0 +1,24 @@
+apiVersion: pkg.crossplane.io/v1
+kind: Configuration
+metadata:
+  name: helm-headlamp
+spec:
+  package: ghcr.io/hops-ops/helm-headlamp:{{ .Values.version }}
+  packagePullSecrets:
+    - name: ghcr
+  skipDependencyResolution: {{ .Values.skipDependencyResolution }}
+
+{{- if .Values.skipDependencyResolution }}
+---
+# Only rendered when skipDependencyResolution=true (platform/advanced use case)
+# When false, Crossplane automatically resolves and installs embedded functions
+apiVersion: pkg.crossplane.io/v1
+kind: Function
+metadata:
+  name: hops-ops-helm-headlamprender
+spec:
+  package: ghcr.io/hops-ops/helm-headlamp_render:{{ .Values.version }}
+  packagePullSecrets:
+    - name: ghcr
+  skipDependencyResolution: {{ .Values.skipDependencyResolution }}
+{{- end }}

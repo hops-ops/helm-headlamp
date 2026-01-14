@@ -1,0 +1,44 @@
+# code: language=yaml
+#
+# Helm release for Headlamp
+#
+# Headlamp provides:
+# - Modern, extensible Kubernetes web UI
+# - Plugin system for customization
+# - Multi-cluster support
+# - OIDC authentication support
+#
+
+{{- $headlamp := $state.headlamp }}
+
+---
+apiVersion: helm.m.crossplane.io/v1beta1
+kind: Release
+metadata:
+  name: {{ $headlamp.releaseName }}
+  annotations:
+    {{ setResourceNameAnnotation "helm-release-headlamp" }}
+  labels: {{ $headlamp.labels | toJson }}
+spec:
+  managementPolicies: {{ $headlamp.managementPolicies | toJson }}
+  forProvider:
+    chart:
+      name: headlamp
+      repository: https://kubernetes-sigs.github.io/headlamp/
+      version: "0.27.0"
+    namespace: {{ $headlamp.namespace }}
+    {{- if $headlamp.overrideAllValues }}
+    values:
+      {{- toYaml $headlamp.overrideAllValues | nindent 6 }}
+    {{- else }}
+    values:
+      fullnameOverride: headlamp
+      nameOverride: headlamp
+      {{- if $headlamp.values }}
+      {{- toYaml $headlamp.values | nindent 6 }}
+      {{- end }}
+    {{- end }}
+  rollbackLimit: 3
+  providerConfigRef:
+    name: {{ $headlamp.providerConfigRef.name }}
+    kind: {{ $headlamp.providerConfigRef.kind }}

@@ -1,0 +1,85 @@
+apiVersion: apiextensions.crossplane.io/v2
+kind: CompositeResourceDefinition
+metadata:
+  name: headlamp.helm.hops.ops.com.ai
+spec:
+  group: helm.hops.ops.com.ai
+  names:
+    kind: Headlamp
+    plural: headlamp
+  scope: Namespaced
+
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            required:
+            - clusterName
+            properties:
+              clusterName:
+                type: string
+                description: Name of the target cluster (used as default providerConfigRef.name)
+
+              labels:
+                type: object
+                description: Labels applied to all Kubernetes resources (merged with defaults)
+                x-kubernetes-preserve-unknown-fields: true
+
+              providerConfigRef:
+                type: object
+                description: Reference to the Helm ProviderConfig
+                properties:
+                  name:
+                    type: string
+                    description: Name of the ProviderConfig
+                  kind:
+                    type: string
+                    description: Kind of the ProviderConfig
+                    default: ProviderConfig
+
+              helm:
+                type: object
+                description: Helm release configuration
+                properties:
+                  namespace:
+                    type: string
+                    description: Namespace for the Helm release
+                    default: headlamp
+                  name:
+                    type: string
+                    description: Name of the Helm release
+                    default: headlamp
+                  values:
+                    type: object
+                    description: Helm values (merged with defaults)
+                    x-kubernetes-preserve-unknown-fields: true
+                  overrideAllValues:
+                    type: object
+                    description: Helm values that replace all defaults
+                    x-kubernetes-preserve-unknown-fields: true
+
+          status:
+            type: object
+            properties:
+              ready:
+                type: boolean
+                description: Whether the Headlamp deployment is ready
+              release:
+                type: object
+                description: Helm release status
+                properties:
+                  name:
+                    type: string
+                    description: Name of the Helm release
+                  namespace:
+                    type: string
+                    description: Namespace of the Helm release
+                  ready:
+                    type: boolean
+                    description: Whether the Helm release is ready

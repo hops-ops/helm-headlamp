@@ -1,0 +1,31 @@
+apiVersion: helm.hops.ops.com.ai/v1alpha1
+kind: Headlamp
+metadata:
+  name: headlamp
+  namespace: example-env
+spec:
+  clusterName: example-cluster
+
+  labels:
+    team: platform
+
+  helm:
+    namespace: headlamp
+    name: headlamp
+    values:
+      replicaCount: 2
+      config:
+        oidc:
+          clientID: ""
+          clientSecret: ""
+          issuerURL: ""
+          scopes: ""
+      ingress:
+        enabled: false
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 500m
+          memory: 256Mi

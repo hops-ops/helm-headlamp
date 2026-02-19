@@ -30,13 +30,9 @@ spec:
     {{- if $headlamp.overrideAllValues }}
     values:
       {{- toYaml $headlamp.overrideAllValues | nindent 6 }}
-    {{- else }}
+    {{- else if $headlamp.values }}
     values:
-      fullnameOverride: headlamp
-      nameOverride: headlamp
-      {{- if $headlamp.values }}
       {{- toYaml $headlamp.values | nindent 6 }}
-      {{- end }}
     {{- end }}
   rollbackLimit: 3
   providerConfigRef:
